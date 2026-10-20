@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PresensiKu - Absensi Kegiatan Digital</title>
+  
+  <!-- ==========================================
+       CSS: Desain Tampilan UI/UX Modern & Responsif
+       ========================================== -->
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --success: #16a34a;
+      --warning: #ca8a04;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 850px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    header h1 {
+      color: var(--primary);
+      font-size: 26px;
+      margin-bottom: 5px;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* Kotak Statistik Ringkasan */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .stat-card h3 {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+    }
+
+    .stat-card .angka {
+      font-size: 22px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    /* Layout Utama Form dan Tabel */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .card h2 {
+      font-size: 16px;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 8px;
+    }
+
+    /* Form Input */
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .btn {
+      width: 100%;
+      background-color: var(--primary);
+      color: white;
+      padding: 11px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-hover);
+    }
+
+    /* Tabel Daftar Hadir */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+      font-size: 13px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    th {
+      background-color: #f8fafc;
+      color: var(--text-muted);
+    }
+
+    /* Badge Status Kehadiran */
+    .badge {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .badge.hadir { background-color: #dcfce7; color: var(--success); }
+    .badge.izin { background-color: #fef9c3; color: var(--warning); }
+    .badge.sakit { background-color: #fee2e2; color: #dc2626; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header Aplikasi -->
+    <header>
+      <h1>PresensiKu 📋</h1>
+      <p>Aplikasi Pencatatan Daftar Hadir Kegiatan Sekolah & Organisasi</p>
+    </header>
+
+    <!-- Kartu Statistik -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Total Hadir</h3>
+        <div class="angka" id="statHadir">0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Total Izin/Sakit</h3>
+        <div class="stat-card-inner">
+          <div class="angka" id="statIzinSakit">0</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <h3>Keseluruhan Peserta</h3>
+        <div class="angka" id="statTotal">0</div>
+      </div>
+    </div>
+
+    <!-- Grid Konten -->
+    <div class="content-grid">
+      <!-- Form Input Presensi -->
+      <div class="card">
+        <h2>Formulir Absensi Peserta</h2>
+        <div class="form-group">
+          <label for="nama">Nama Lengkap:</label>
+          <input type="text" id="nama" placeholder="Contoh: Siti Aminah">
+        </div>
+
+        <div class="form-group">
+          <label for="kelas">Kelas / Asal Instansi:</label>
+          <input type="text" id="kelas" placeholder="Contoh: XI RPL 1">
+        </div>
+
+        <div class="form-group">
+          <label for="status">Status Kehadiran:</label>
+          <select id="status">
+            <option value="Hadir">Hadir</option>
+            <option value="Izin">Izin</option>
+            <option value="Sakit">Sakit</option>
+          </select>
+        </div>
+
+        <button class="btn" onclick="kirimAbsen()">Kirim Kehadiran</button>
+      </div>
+
+      <!-- Tabel Riwayat Kehadiran -->
+      <div class="card">
+        <h2>Daftar Peserta Hadir (Real-Time)</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Nama Peserta</th>
+              <th>Kelas</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="tabelPresensi">
+            <tr>
+              <td colspan="3" style="text-align: center; color: var(--text-muted);">Belum ada data peserta yang masuk.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       JAVASCRIPT: Logika Interaktif & Statistik
+       ========================================== -->
+  <script>
+    // Array untuk menyimpan data kehadiran peserta
+    let daftarPeserta = [];
+
+    function kirimAbsen() {
+      // 1. Ambil nilai dari elemen input form
+      const nama = document.getElementById('nama').value;
+      const kelas = document.getElementById('kelas').value;
+      const status = document.getElementById('status').value;
+
+      // 2. Validasi sederhana
+      if (nama.trim() === "" || kelas.trim() === "") {
+        alert("Mohon isi Nama Lengkap dan Kelas terlebih dahulu!");
+        return;
+      }
+
+      // 3. Masukkan data baru ke dalam array
+      daftarPeserta.push({ nama, kelas, status });
+
+      // 4. Perbarui tampilan layar & statistik
+      perbaruiTampilan();
+
+      // 5. Reset form input
+      document.getElementById('nama').value = '';
+      document.getElementById('kelas').value = '';
+    }
+
+    function perbaruiTampilan() {
+      const tbody = document.getElementById('tabelPresensi');
+      tbody.innerHTML = '';
+
+      if (daftarPeserta.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--text-muted);">Belum ada data peserta yang masuk.</td></tr>`;
+        return;
+      }
+
+      let countHadir = 0;
+      let countIzinSakit = 0;
+
+      // Loop data untuk dimasukkan ke baris tabel HTML
+      daftarPeserta.forEach(item => {
+        const baris = document.createElement('tr');
+
+        // Hitung statistik
+        if (item.status === 'Hadir') {
+          countHadir++;
+        } else {
+          countIzinSakit++;
+        }
+
+        // Tentukan kelas CSS untuk badge status
+        let kelasBadge = 'hadir';
+        if (item.status === 'Izin') kelasBadge = 'izin';
+        if (item.status === 'Sakit') kelasBadge = 'sakit';
+
+        baris.innerHTML = `
+          <td>${item.nama}</td>
+          <td>${item.kelas}</td>
+          <td><span class="badge ${kelasBadge}">${item.status}</span></td>
+        `;
+
+        tbody.appendChild(baris);
+      });
+
+      // Perbarui angka di kotak statistik atas
+      document.getElementById('statHadir').innerText = countHadir;
+      document.getElementById('statIzinSakit').innerText = countIzinSakit;
+      document.getElementById('statTotal').innerText = daftarPeserta.length;
+    }
+  </script>
+</body>
+</html>
